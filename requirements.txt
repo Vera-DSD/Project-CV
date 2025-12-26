@@ -1,20 +1,36 @@
-# Streamlit Cloud core
+# ==== ЯДРО STREAMLIT (фиксируем первым) ====
 streamlit==1.28.0
+rich>=13.5.3, <14
+altair<6
+attrs<25
+gitpython<4
+pyarrow<17
+pympler<2
+# ===========================================
 
-# PyTorch (CPU версия - обязательно для Cloud)
-torch==1.13.1+cpu
-torchvision==0.14.1+cpu
+# ==== PyTorch CPU (стабильные версии) ====
+torch==1.13.1
+torchvision==0.14.1
+# torchaudio и torchmetrics убраны для совместимости
+# ===========================================
 
-# Basic dependencies
+# ==== Базовые библиотеки ====
 numpy==1.24.3
 Pillow==10.0.0
-opencv-python-headless==4.8.1.78
-matplotlib==3.7.2
+opencv-python-headless==4.8.1.78  # Используйте headless для облака!
+matplotlib==3.8.2
+requests==2.31.0
+# ===========================================
 
-# Для решения конфликта с rich
-rich==13.7.0
+# ==== Segmentation Models (согласованный набор) ====
+timm==0.4.12
+efficientnet-pytorch==0.6.3
+segmentation-models-pytorch==0.2.1
+# ===========================================
 
-# Для segmentation_models_pytorch с указанием совместимых версий
-segmentation-models-pytorch==0.3.2
-timm==0.6.13
-efficientnet-pytorch==0.7.1
+# ==== Остальные ваши пакеты ====
+albumentations==1.3.1
+scikit-learn==1.3.2
+tqdm==4.66.1
+ultralytics==8.0.196  # Понижена версия для совместимости
+# ===========================================
