@@ -5,21 +5,29 @@ from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 import requests
 import cv2
-import matplotlib.pyplot as plt
 import segmentation_models_pytorch as smp
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
-# -----------------------------
-st.set_page_config(page_title="UNet Forest Segmentation", layout="wide")
+# ======================================================
+# НАСТРОЙКИ СТРАНИЦЫ
+# ======================================================
+st.set_page_config(
+    page_title="UNet Forest Segmentation",
+    layout="wide"
+)
+
 st.title("🌲 UNet Forest Segmentation")
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 weights_path = "unet_forest_weights_final.pth"
+metrics_image_path = "assets/metrics.png"
 
-# -----------------------------
+# ======================================================
+# ЗАГРУЗКА МОДЕЛИ
+# ======================================================
 @st.cache_resource
-def load_model(weights_path):
+def load_model(weights_path: str):
     model = smp.Unet(
         encoder_name="resnet34",
         encoder_weights=None,
@@ -31,9 +39,12 @@ def load_model(weights_path):
     model.eval()
     return model
 
+
 model = load_model(weights_path)
 
-# -----------------------------
+# ======================================================
+# ПРЕОБРАЗОВАНИЯ
+# ======================================================
 transform = A.Compose([
     A.Resize(256, 256),
     A.Normalize(
@@ -43,8 +54,10 @@ transform = A.Compose([
     ToTensorV2()
 ])
 
-# -----------------------------
-def predict_image(img_pil):
+# ======================================================
+# ПРЕДСКАЗАНИЕ
+# ======================================================
+def predict_image(img_pil: Image.Image):
     img_np = np.array(img_pil.convert("RGB"))
 
     augmented = transform(image=img_np)
@@ -58,9 +71,9 @@ def predict_image(img_pil):
 
     return img_np, mask
 
-# =============================
+# ======================================================
 # ЗАГРУЗКА ИЗОБРАЖЕНИЙ
-# =============================
+# ======================================================
 st.header("📤 Загрузка изображений")
 
 uploaded_files = st.file_uploader(
@@ -78,12 +91,12 @@ load_urls_btn = st.button("🌐 Загрузить изображения по U
 
 images = []
 
-# --- Локальные файлы ---
+# --- локальные файлы ---
 if uploaded_files:
     for file in uploaded_files:
         images.append(Image.open(file))
 
-# --- URL (ТОЛЬКО ПО КНОПКЕ) ---
+# --- загрузка по URL ---
 if load_urls_btn and urls_text.strip():
     urls = [u.strip() for u in urls_text.split("\n") if u.strip()]
 
@@ -99,48 +112,37 @@ if load_urls_btn and urls_text.strip():
         except (UnidentifiedImageError, requests.RequestException):
             st.warning(f"❌ Не удалось загрузить изображение: {url}")
 
-# =============================
-# ВИЗУАЛИЗАЦИЯ
-# =============================
+# ======================================================
+# ВИЗУАЛИЗАЦИЯ РЕЗУЛЬТАТОВ
+# ======================================================
 if images:
     st.header("🧠 Результаты сегментации")
 
     for idx, img_pil in enumerate(images):
         img_np, mask_np = predict_image(img_pil)
 
-        # Накладываем маску вручную
         overlay = img_np.copy()
         red_mask = np.zeros_like(overlay)
         red_mask[..., 0] = 255
-        overlay = np.where(mask_np[..., None] > 0, 
-                            0.6 * red_mask + 0.4 * overlay, 
-                            overlay).astype(np.uint8)
+
+        overlay = np.where(
+            mask_np[..., None] > 0,
+            0.6 * red_mask + 0.4 * overlay,
+            overlay
+        ).astype(np.uint8)
 
         col1, col2 = st.columns(2)
 
         with col1:
-            st.markdown(f"**Оригинал #{idx+1}**")
-            st.image(img_np, width=500)
+            st.markdown(f"**Оригинал #{idx + 1}**")
+            st.image(img_np, use_container_width=True)
 
         with col2:
-            st.markdown(f"**Сегментация #{idx+1}**")
-            st.image(overlay, width=500)
+            st.markdown(f"**Сегментация #{idx + 1}**")
+            st.image(overlay, use_container_width=True)
 
-# =============================
-# ИНФОРМАЦИЯ О МОДЕЛИ
-# =============================
-st.header("ℹ️ Информация о модели")
-st.markdown("""
-**Архитектура:** UNet (ResNet34)  
-**Тип задачи:** Семантическая сегментация   
-
-**Обучение:**
-- Эпохи: 30  
-- Размер изображений: 256×256  
-- Датасет: Forest Aerial Images  
-
-**Метрики:**
-- Train : Loss: 0.1404 | Dice: 0.8596 | IoU: 0.7587 | Acc: 0.8204 | AP50: 0.8118 | AP75: 0.8120 
-- Valid : Loss: 0.1407 | Dice: 0.8593 | IoU: 0.7587 | Acc: 0.8259 | AP50: 0.8167 | AP75: 0.8169 
-
-""")
+# ======================================================
+# МЕТРИКИ МОДЕЛИ
+# ======================================================
+st.header("📊 Метрики модели")
+st.image(metrics_image_path, use_container_width=True)
