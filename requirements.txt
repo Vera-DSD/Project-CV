@@ -1,28 +1,25 @@
-# Базовые библиотеки
-numpy==1.24.6
-opencv-python==4.8.1.78
-Pillow==10.0.0
-matplotlib==3.8.0
-requests==2.31.0
-
-# PyTorch и сопутствующие пакеты
-torch==2.1.0
-torchvision==0.16.1
-torchaudio==2.1.0
-torchmetrics==0.11.5
-
-# Альбументации для аугментаций
-albumentations==1.3.1
-
-# Для сегментации
-segmentation-models-pytorch==0.3.2
-
-# Streamlit для веб-приложения
+# Основные
 streamlit==1.28.0
 
-# Для YOLO (Ultralytics)
-ultralytics==8.1.0
+# PyTorch (оптимизированная версия для CPU)
+torch==1.12.0
+torchvision==0.13.0
 
-# Для обработки и визуализации данных
+# Базовые библиотеки (можно оставить как есть)
+numpy==1.24.3
+Pillow==10.0.0
+matplotlib==3.7.2
+requests==2.31.0
+
+# Для OpenCV используйте headless-версию (без GUI)
+opencv-python-headless==4.8.1.78
+
+# Для аугментаций
+albumentations==1.3.1
+
+# Для YOLO
+ultralytics==8.0.196  # более старая, но стабильная версия
+
+# Для обработки данных
 scikit-learn==1.3.0
-tqdm==4.66.1
+tqdm==4.65.0
