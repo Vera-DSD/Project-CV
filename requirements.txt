@@ -1,25 +1,12 @@
-# Основные
 streamlit==1.28.0
-
-# PyTorch (оптимизированная версия для CPU)
-torch==1.12.0
-torchvision==0.13.0
-
-# Базовые библиотеки (можно оставить как есть)
+torch==1.12.1
+torchvision==0.13.1
 numpy==1.24.3
+opencv-python-headless==4.8.1.78
 Pillow==10.0.0
 matplotlib==3.7.2
 requests==2.31.0
-
-# Для OpenCV используйте headless-версию (без GUI)
-opencv-python-headless==4.8.1.78
-
-# Для аугментаций
 albumentations==1.3.1
-
-# Для YOLO
-ultralytics==8.0.196  # более старая, но стабильная версия
-
-# Для обработки данных
+ultralytics==8.0.196
 scikit-learn==1.3.0
 tqdm==4.65.0
